@@ -1,0 +1,13 @@
+[build]
+target = "xtensa-esp32-none-elf"
+
+[target.xtensa-esp32-none-elf]
+runner = "espflash flash --monitor --chip esp32"
+# GNU LD, as in esp-hal's own examples: esp-hal's linker script + no crt0.
+rustflags = ["-C", "link-arg=-Wl,-Tlinkall.x", "-C", "link-arg=-nostartfiles"]
+
+[unstable]
+build-std = ["alloc", "core"]
+
+[env]
+ESP_LOG = "info"

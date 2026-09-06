@@ -1,6 +1,58 @@
 [package]
 name = "olivaw-car"
+description = "Olivaw car firmware for the ESP32-WROOM-32D: BLE-driven differential drive with battery telemetry, optional RPLIDAR C1 streaming and Wi-Fi/MQTT uplink"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
 repository.workspace = true
+rust-version = "1.95"
+publish = false
+
+[features]
+default = []
+## RPLIDAR C1 on UART1: scan pump + rotation frames.
+lidar = ["dep:olivaw-lidar-pump", "olivaw-board-esp32/lidar"]
+## Wi-Fi station + MQTT publisher (telemetry JSON, scan frames). BLE stays up (coex).
+uplink = [
+    "esp-radio/wifi",
+    "esp-radio/coex",
+    "dep:embassy-net",
+    "dep:rust-mqtt",
+    "dep:serde-json-core",
+]
+
+[dependencies]
+esp-hal = { version = "1.1.2", features = ["esp32", "unstable", "log-04"] }
+esp-rtos = { version = "0.3.0", features = ["esp32", "embassy", "esp-radio", "esp-alloc", "log-04"] }
+esp-radio = { version = "1.0.0-beta.0", features = ["esp32", "ble", "unstable", "log-04"] }
+esp-alloc = "0.10.0"
+esp-bootloader-esp-idf = { version = "0.5.0", features = ["esp32"] }
+esp-backtrace = { version = "0.19.0", features = ["esp32", "panic-handler", "println"] }
+esp-println = { version = "0.17.0", features = ["esp32", "log-04"] }
+log = "0.4"
+embassy-executor = "0.10.0"
+embassy-time = "0.5.1"
+embassy-sync = "0.7.2"
+embassy-futures = "0.1"
+embassy-net = { version = "0.8.0", features = ["dhcpv4", "medium-ethernet", "tcp", "dns", "proto-ipv4"], optional = true }
+trouble-host = { version = "0.6.0", features = ["default-packet-pool-mtu-255", "derive", "scan"] }
+rust-mqtt = { version = "0.5.1", optional = true }
+static_cell = "2.1.1"
+heapless.workspace = true
+nb = "1"
+postcard.workspace = true
+serde.workspace = true
+serde-json-core = { version = "0.6.0", optional = true }
+embedded-io-async = "0.7"
+olivaw-proto.workspace = true
+olivaw-drive.workspace = true
+olivaw-battery.workspace = true
+olivaw-board-esp32.workspace = true
+olivaw-lidar-pump = { workspace = true, optional = true }
+
+[lints.rust]
+unsafe_code = "deny"
+missing_docs = "warn"
+
+[lints.clippy]
+pedantic = { level = "warn", priority = -1 }

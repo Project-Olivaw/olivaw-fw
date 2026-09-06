@@ -1,6 +1,30 @@
 [package]
 name = "olivaw-board-esp32"
+description = "Board support for the Olivaw car on an ESP32-WROOM-32D DevKit V1: pin map, motors (LEDC + L298N), battery ADC, lidar UART, status LED"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
 repository.workspace = true
+rust-version = "1.88"
+publish = false
+
+[features]
+default = []
+## Configure UART1 for the RPLIDAR C1 (GPIO27 RX / GPIO25 TX, 460800 8N1).
+lidar = []
+
+[dependencies]
+esp-hal = { version = "1.1.2", features = ["esp32", "unstable", "log-04"] }
+embedded-hal.workspace = true
+static_cell = "2.1.1"
+nb = "1"
+log = "0.4"
+olivaw-drive.workspace = true
+olivaw-battery.workspace = true
+
+[lints.rust]
+unsafe_code = "forbid"
+missing_docs = "warn"
+
+[lints.clippy]
+pedantic = { level = "warn", priority = -1 }

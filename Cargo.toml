@@ -44,6 +44,19 @@ serde = { version = "1", default-features = false, features = ["derive"] }
 postcard = { version = "1.1", default-features = false }
 thiserror = { version = "2", default-features = false }
 
+# esp-hal misbehaves unoptimised (timing, boot) — keep dev builds at -Os.
+[profile.dev]
+opt-level = "s"
+
+[profile.release]
+codegen-units = 1
+debug = 2
+debug-assertions = false
+incremental = false
+lto = "fat"
+opt-level = "s"
+overflow-checks = false
+
 [workspace.lints.rust]
 unsafe_code = "forbid"
 missing_docs = "warn"

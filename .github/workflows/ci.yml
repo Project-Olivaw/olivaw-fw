@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  host:
+    name: host crates — fmt + clippy + test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: Project-Olivaw/olivaw-lidar
+          path: ../olivaw-lidar
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - run: cargo fmt --all --check
+      - run: cargo clippy --workspace --exclude olivaw-car --exclude olivaw-board-esp32 --all-targets -- -D warnings
+      - run: cargo test --workspace --exclude olivaw-car --exclude olivaw-board-esp32
+
+  xtensa:
+    name: esp32 firmware — clippy + release build
+    runs-on: ubuntu-latest
+    container: espressif/idf-rust:esp32_latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: Project-Olivaw/olivaw-lidar
+          path: ../olivaw-lidar
+      - name: clippy (all features)
+        working-directory: olivaw-car
+        run: cargo clippy --features lidar,uplink -- -D warnings
+      - name: build (all features)
+        working-directory: olivaw-car
+        run: cargo build --release --features lidar,uplink
+      - uses: actions/upload-artifact@v4
+        with:
+          name: olivaw-car-elf
+          path: target/xtensa-esp32-none-elf/release/olivaw-car

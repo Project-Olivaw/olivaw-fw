@@ -1,0 +1,3 @@
+[toolchain]
+# The Xtensa-enabled Rust toolchain installed by `espup install`.
+channel = "esp"
