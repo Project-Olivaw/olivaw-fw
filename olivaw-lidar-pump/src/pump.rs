@@ -6,6 +6,9 @@ use olivaw_lidar::protocol::descriptor::{
 };
 use olivaw_lidar::protocol::scan_node::{SCAN_NODE_LEN, ScanNode, parse_scan_node};
 
+/// `SCAN_NODE_LEN` as the descriptor's `u32` length field.
+const NODE_LEN_U32: u32 = 5;
+
 /// Counters for telemetry and tests.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 pub struct PumpStats {
@@ -93,9 +96,7 @@ impl Pump {
                     return None;
                 }
                 let ok = parse_descriptor(&self.buf)
-                    .and_then(|d| {
-                        d.expect(DATA_TYPE_MEASUREMENT, SCAN_NODE_LEN as u32, SendMode::Multi)
-                    })
+                    .and_then(|d| d.expect(DATA_TYPE_MEASUREMENT, NODE_LEN_U32, SendMode::Multi))
                     .is_ok();
                 if ok {
                     self.state = State::Nodes;
@@ -115,19 +116,15 @@ impl Pump {
                 }
                 let mut node = [0u8; SCAN_NODE_LEN];
                 node.copy_from_slice(&self.buf[..SCAN_NODE_LEN]);
-                match parse_scan_node(&node) {
-                    Ok(n) => {
-                        self.len = 0;
-                        self.stats.nodes += 1;
-                        Some(n)
-                    }
-                    Err(_) => {
-                        self.stats.resync_bytes += 1;
-                        self.buf.copy_within(1..SCAN_NODE_LEN, 0);
-                        self.len = SCAN_NODE_LEN - 1;
-                        None
-                    }
+                if let Ok(n) = parse_scan_node(&node) {
+                    self.len = 0;
+                    self.stats.nodes += 1;
+                    return Some(n);
                 }
+                self.stats.resync_bytes += 1;
+                self.buf.copy_within(1..SCAN_NODE_LEN, 0);
+                self.len = SCAN_NODE_LEN - 1;
+                None
             }
         }
     }
