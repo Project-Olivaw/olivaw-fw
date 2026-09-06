@@ -1,0 +1,24 @@
+[package]
+name = "olivaw-proto"
+description = "Wire types shared by the Olivaw car firmware, the hub and the apps: BLE frames + MQTT payloads"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+keywords = ["robotics", "protocol", "ble", "mqtt", "no-std"]
+categories = ["no-std", "encoding", "science::robotics"]
+
+[features]
+default = []
+## Enables `std::error::Error` plumbing and `alloc`-backed helpers for host programs (the hub).
+std = ["serde/std", "postcard/use-std", "thiserror/std"]
+
+[dependencies]
+serde.workspace = true
+heapless.workspace = true
+postcard.workspace = true
+thiserror.workspace = true
+
+[lints]
+workspace = true

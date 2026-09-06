@@ -1,0 +1,6 @@
+[package]
+name = "olivaw-car"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true

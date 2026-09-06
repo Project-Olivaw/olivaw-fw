@@ -1,0 +1,54 @@
+# Project Olivaw firmware workspace.
+#
+# Two kinds of members live here:
+# - pure `no_std` libraries (proto, drive, battery, lidar-pump) — tested on the host with plain stable Rust;
+# - the ESP32 board crate and the `olivaw-car` binary — built only for `xtensa-esp32-none-elf`
+#   from inside their own directories (each carries a `rust-toolchain.toml` + `.cargo/config.toml`).
+#
+# Host gate:   cargo test --workspace --exclude olivaw-car --exclude olivaw-board-esp32
+# Firmware:    cd olivaw-car && cargo run --release [--features lidar,uplink]
+[workspace]
+resolver = "2"
+members = [
+    "olivaw-proto",
+    "olivaw-drive",
+    "olivaw-battery",
+    "olivaw-lidar-pump",
+    "olivaw-board-esp32",
+    "olivaw-car",
+]
+default-members = [
+    "olivaw-proto",
+    "olivaw-drive",
+    "olivaw-battery",
+    "olivaw-lidar-pump",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+license = "MIT"
+repository = "https://github.com/Project-Olivaw/olivaw-fw"
+
+[workspace.dependencies]
+olivaw-proto = { path = "olivaw-proto" }
+olivaw-drive = { path = "olivaw-drive" }
+olivaw-battery = { path = "olivaw-battery" }
+olivaw-lidar-pump = { path = "olivaw-lidar-pump" }
+olivaw-board-esp32 = { path = "olivaw-board-esp32" }
+olivaw-lidar = { path = "../olivaw-lidar", default-features = false }
+embedded-hal = "1.0"
+heapless = { version = "0.9", features = ["serde"] }
+serde = { version = "1", default-features = false, features = ["derive"] }
+postcard = { version = "1.1", default-features = false }
+thiserror = { version = "2", default-features = false }
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+missing_docs = "warn"
+
+[workspace.lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+unwrap_used = "warn"
+expect_used = "warn"

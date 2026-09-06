@@ -1,0 +1,4 @@
+target/
+**/*.rs.bk
+# Wi-Fi / MQTT credentials for the car — never committed. Copy secrets.example.toml.
+olivaw-car/secrets.toml

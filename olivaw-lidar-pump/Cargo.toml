@@ -1,0 +1,17 @@
+[package]
+name = "olivaw-lidar-pump"
+description = "no_std streaming byte pump for RPLIDAR scans: bytes in, whole rotations out, built on olivaw-lidar's protocol core"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+keywords = ["lidar", "rplidar", "robotics", "no-std"]
+categories = ["no-std", "embedded", "science::robotics"]
+
+[dependencies]
+olivaw-lidar.workspace = true
+olivaw-proto.workspace = true
+
+[lints]
+workspace = true

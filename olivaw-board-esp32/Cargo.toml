@@ -1,0 +1,6 @@
+[package]
+name = "olivaw-board-esp32"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true

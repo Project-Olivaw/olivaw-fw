@@ -1,0 +1,15 @@
+[package]
+name = "olivaw-battery"
+description = "Battery sensing maths for Olivaw vehicles: voltage divider, ADC model, LiPo state of charge, low-battery hysteresis"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+keywords = ["robotics", "battery", "lipo", "adc", "no-std"]
+categories = ["no-std", "embedded", "science::robotics"]
+
+[dependencies]
+
+[lints]
+workspace = true
