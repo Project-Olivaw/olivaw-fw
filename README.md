@@ -32,14 +32,18 @@ espup install                       # Xtensa Rust toolchain, channel "esp"
 ## Build, flash, monitor
 
 ```sh
-cd olivaw-car
-cargo run --release                             # Phase 1: BLE car + battery telemetry
-cargo run --release --features lidar            # + RPLIDAR C1 on UART1
-cp secrets.example.toml secrets.toml            # Wi-Fi + broker credentials (gitignored)
-cargo run --release --features lidar,uplink     # + Wi-Fi/MQTT uplink to olivaw-hub
+./scripts/setup.sh                              # once per machine: espup, the esp toolchain, espflash
+./scripts/flash.sh                              # Phase 1: BLE car + battery telemetry (build + flash + monitor)
+./scripts/flash.sh lidar                        # + RPLIDAR C1 on UART1
+cp olivaw-car/secrets.example.toml olivaw-car/secrets.toml   # Wi-Fi + broker credentials (gitignored)
+./scripts/flash.sh lidar,uplink                 # + Wi-Fi/MQTT uplink to olivaw-hub
+./scripts/monitor.sh                            # serial monitor only; LOG=boot.log to keep a transcript
 ```
 
-`cargo run` flashes over USB and opens the serial monitor (`ESP_LOG=info`).
+`cargo run --release` inside `olivaw-car` does the same as `flash.sh` (runner = `espflash flash --monitor`).
+Expected boot log: `olivaw-car 0.1.0 starting` → `ble: advertising as OLIVAW-CAR` → a telemetry line every 5 s.
+
+Never have the L298N 5V → ESP32 VIN wire and the USB cable connected at the same time.
 
 ## Verify (no hardware)
 

@@ -26,7 +26,7 @@ pub async fn run(mut adc: BatteryAdc) {
         // No divider wired (the reference video's build): report unknown, never inhibit.
         if pack_mv < config::BATTERY_MIN_PLAUSIBLE_MV {
             if !unwired_logged {
-                log::warn!("battery: {pack_mv} mV on GPIO34 — no sense divider wired, reporting 0");
+                log::warn!("battery: {pack_mv} mV on GPIO34, no sense divider wired, reporting 0");
                 unwired_logged = true;
             }
             with_state(|s| {
