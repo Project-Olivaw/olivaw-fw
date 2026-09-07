@@ -36,6 +36,9 @@ pub const BATTERY_DIVIDER: Divider = Divider::CAR_3S;
 pub const BATTERY_ADC_MODEL: AdcModel = AdcModel::ESP32_11DB_NOMINAL;
 /// Low / critical thresholds and hysteresis.
 pub const BATTERY_MONITOR: MonitorConfig = MonitorConfig::CAR_3S;
+/// Readings below this are treated as "no divider wired to GPIO34" (a floating pin reads noise):
+/// telemetry reports 0 mV / 0 % and driving is never inhibited. A real 3S pack is never below 9 V.
+pub const BATTERY_MIN_PLAUSIBLE_MV: u32 = 6_000;
 
 /// Telemetry snapshot period, milliseconds (5 Hz → BLE notify rate).
 pub const TELEMETRY_PERIOD_MS: u64 = 200;

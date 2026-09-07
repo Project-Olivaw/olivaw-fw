@@ -15,12 +15,31 @@ pub async fn run(mut adc: BatteryAdc) {
     let mut monitor = BatteryMonitor::new(config::BATTERY_MONITOR);
     let mut ticker = Ticker::every(Duration::from_millis(config::BATTERY_PERIOD_MS));
     let mut last_state = BatteryState::Ok;
+    let mut unwired_logged = false;
 
     loop {
         ticker.next().await;
         let raw = adc.read_mean::<{ config::BATTERY_SAMPLES }>();
         let pin_mv = config::BATTERY_ADC_MODEL.pin_mv(raw);
         let pack_mv = config::BATTERY_DIVIDER.pack_mv(pin_mv);
+
+        // No divider wired (the reference video's build): report unknown, never inhibit.
+        if pack_mv < config::BATTERY_MIN_PLAUSIBLE_MV {
+            if !unwired_logged {
+                log::warn!("battery: {pack_mv} mV on GPIO34 — no sense divider wired, reporting 0");
+                unwired_logged = true;
+            }
+            with_state(|s| {
+                s.battery_mv = 0;
+                s.battery_pct = 0;
+                s.battery_state = BatteryState::Ok;
+                s.flags.set(Flags::LOW_BATTERY, false);
+                s.flags.set(Flags::CRITICAL_BATTERY, false);
+            });
+            continue;
+        }
+        unwired_logged = false;
+
         let pct = pack_percent(pack_mv, config::BATTERY_CELLS);
         let state = monitor.update(pack_mv);
 
